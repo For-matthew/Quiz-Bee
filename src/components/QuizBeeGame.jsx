@@ -21,13 +21,10 @@ export default function QuizBeeGame({ questions, triggerPageFlip, language, onBa
 
   const currentQ = questions[currentIndex];
 
-  // Dynamic Translations based on language prop
   const t = language === 'tl' ? {
-    questionLabel: "Tanong",
-    of: "ng",
     clue: "Clue",
     fillLabel: "Punan ang mga Nawawalang Letra (I-tap para bawiin)",
-    pickLabel: "Piliin ang mga Nawawalang Letra:",
+    pickLabel: "Piliin ang Tamang Letra:",
     submitBtn: "IPASA ANG SAGOT",
     nextBtn: "SUSUNOD NA TANONG ➔",
     playAgainBtn: "BUMALIK SA MENU 🔄",
@@ -36,11 +33,9 @@ export default function QuizBeeGame({ questions, triggerPageFlip, language, onBa
     goodJobTitle: "MAGALING!",
     foundMsg: (word) => `Nahanap mo ang mga letra para mabuo ang "${word}"!`
   } : {
-    questionLabel: "Question",
-    of: "of",
     clue: "Clue",
     fillLabel: "Fill in the Missing Letters (Tap to undo)",
-    pickLabel: "Pick the Missing Letters:",
+    pickLabel: "Choose the Correct Letters:",
     submitBtn: "SUBMIT ANSWER",
     nextBtn: "NEXT QUESTION ➔",
     playAgainBtn: "BACK TO MENU 🔄",
@@ -50,55 +45,36 @@ export default function QuizBeeGame({ questions, triggerPageFlip, language, onBa
     foundMsg: (word) => `You found the missing letters to spell "${word}"!`
   };
 
-useEffect(() => {
+  useEffect(() => {
     if (!currentQ) return;
     
     const rawWord = currentQ.answer.toUpperCase();
-    const cleanWord = rawWord.replace(/\s+/g, '');
-    const len = cleanWord.length;
-
-    // --- BAGONG DYNAMIC LOGIC PARA SA FIXED LETTERS ---
-    const fixedLetterIndices = new Set();
-    
-    fixedLetterIndices.add(0); // Laging pre-filled ang 1st letter
-
-    // Dadagdag ang pre-filled letters habang humahaba ang salita
-    if (len >= 4) fixedLetterIndices.add(2);  // 2nd hint
-    if (len >= 7) fixedLetterIndices.add(5);  // 3rd hint
-    if (len >= 10) fixedLetterIndices.add(8); // 4th hint
-    if (len >= 13) fixedLetterIndices.add(11); // 5th hint
-    if (len >= 16) fixedLetterIndices.add(14); // 6th hint
-    if (len >= 19) fixedLetterIndices.add(17); // 7th hint
-    // ---------------------------------------------------
-
+    const vowels = new Set(['A', 'E', 'I', 'O', 'U']);
     const initialSlots = [];
-    const pool = [];
-    let letterIndex = 0; 
 
+    // Itago ang lahat ng VOWELS (A, E, I, O, U) at ipakita ang CONSONANTS
     for (let i = 0; i < rawWord.length; i++) {
       const char = rawWord[i];
       if (char === ' ') {
         initialSlots.push({ char: ' ', isSpace: true, isFixed: true, tileId: null });
+      } else if (vowels.has(char)) {
+        // Blangko kapag Vowel
+        initialSlots.push({ char: '', isSpace: false, isFixed: false, tileId: null });
       } else {
-        const isFixed = fixedLetterIndices.has(letterIndex);
-        if (isFixed) {
-          initialSlots.push({ char: char, isSpace: false, isFixed: true, tileId: null });
-        } else {
-          initialSlots.push({ char: '', isSpace: false, isFixed: false, tileId: null });
-          pool.push({ id: `tile-${i}-${char}-${Math.random()}`, char: char, isUsed: false });
-        }
-        letterIndex++;
+        // Fixed kapag Consonant
+        initialSlots.push({ char: char, isSpace: false, isFixed: true, tileId: null });
       }
     }
 
-    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    for (let i = 0; i < 5; i++) {
-      const randomChar = alphabet[Math.floor(Math.random() * alphabet.length)];
-      pool.push({ id: `decoy-${i}-${randomChar}-${Math.random()}`, char: randomChar, isUsed: false });
-    }
+    // Gamitin ang eksaktong tiles list mula sa questions.js
+    const pool = currentQ.tiles.map((char, idx) => ({
+      id: `tile-${idx}-${char}-${Math.random()}`,
+      char: char.toUpperCase(),
+      isUsed: false,
+    }));
 
     setSlots(initialSlots);
-    setAvailableTiles(shuffleArray(pool));
+    setAvailableTiles(shuffleArray(pool)); // I-shuffle ang pagpipilian (o palitan ng `pool` lang kung ayaw i-shuffle)
     setAnswerStatus('idle');
     setModalState({ isOpen: false, title: '', message: '', actionLabel: '' });
   }, [currentIndex, currentQ]);
@@ -183,18 +159,13 @@ useEffect(() => {
   if (!currentQ) return null;
   const isFilled = slots.every(s => s.isSpace || s.char !== '');
 
- return (
-    // Nilagyan natin ng mt-6 sm:mt-8 para bumaba nang konti at may space 'yung floating circle
+  return (
     <div className="w-full max-w-2xl flex flex-col items-center mt-6 sm:mt-8">
-      
       <div className="w-full bg-white rounded-3xl p-6 sm:p-7 mb-5 text-center border-4 border-amber-300 relative shadow-2xl">
-        
-        {/* ITO YUNG BAGONG FLOATING CIRCLE NUMBER SA UPPER LEFT */}
         <div className="absolute -top-5 -left-5 sm:-top-6 sm:-left-6 w-14 h-14 sm:w-16 sm:h-16 bg-[#1692e4] text-white rounded-full flex items-center justify-center font-black text-2xl sm:text-3xl border-4 border-white shadow-[0_4px_10px_rgba(0,0,0,0.3)] z-10">
           {currentIndex + 1}
         </div>
 
-        {/* Nilagyan natin ng mt-2 para hindi dikit sa taas yung tanong */}
         <p className="text-gray-800 text-lg sm:text-2xl font-extrabold mb-3 leading-snug mt-2">
           "{currentQ.question}"
         </p>
