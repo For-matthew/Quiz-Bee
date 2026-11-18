@@ -161,7 +161,15 @@ export default function QuizBeeGame({ questions, triggerPageFlip, language, onBa
 
   return (
     <div className="w-full max-w-2xl flex flex-col items-center mt-6 sm:mt-8">
-      <div className="w-full bg-white rounded-3xl p-6 sm:p-7 mb-5 text-center border-4 border-amber-300 relative shadow-2xl">
+      
+      {/* 
+        NILAGYAN NG key={currentIndex} AT className="animate-pop-in"
+        Para tuwing mag-ne-next question, uulitin niya yung Pop-In Bounce effect!
+      */}
+      <div 
+        key={currentIndex} 
+        className="animate-pop-in w-full bg-white rounded-3xl p-6 sm:p-7 mb-5 text-center border-4 border-amber-300 relative shadow-2xl"
+      >
         <div className="absolute -top-5 -left-5 sm:-top-6 sm:-left-6 w-14 h-14 sm:w-16 sm:h-16 bg-[#1692e4] text-white rounded-full flex items-center justify-center font-black text-2xl sm:text-3xl border-4 border-white shadow-[0_4px_10px_rgba(0,0,0,0.3)] z-10">
           {currentIndex + 1}
         </div>
