@@ -42,7 +42,7 @@ export default function App() {
 
           <div className="flex flex-col items-center sm:items-start relative">
             <h1 className="text-4xl sm:text-5xl font-black text-yellow-300 tracking-wider uppercase drop-shadow-[0_4px_0_#92400e] text-center sm:text-left z-10 relative">
-              COMPLETE THE WORD
+              COMPLETE THE WORDS
             </h1>
             
             {/* 
