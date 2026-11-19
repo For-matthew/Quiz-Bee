@@ -52,21 +52,17 @@ export default function QuizBeeGame({ questions, triggerPageFlip, language, onBa
     const vowels = new Set(['A', 'E', 'I', 'O', 'U']);
     const initialSlots = [];
 
-    // Itago ang lahat ng VOWELS (A, E, I, O, U) at ipakita ang CONSONANTS
     for (let i = 0; i < rawWord.length; i++) {
       const char = rawWord[i];
       if (char === ' ') {
         initialSlots.push({ char: ' ', isSpace: true, isFixed: true, tileId: null });
       } else if (vowels.has(char)) {
-        // Blangko kapag Vowel
         initialSlots.push({ char: '', isSpace: false, isFixed: false, tileId: null });
       } else {
-        // Fixed kapag Consonant
         initialSlots.push({ char: char, isSpace: false, isFixed: true, tileId: null });
       }
     }
 
-    // Gamitin ang eksaktong tiles list mula sa questions.js
     const pool = currentQ.tiles.map((char, idx) => ({
       id: `tile-${idx}-${char}-${Math.random()}`,
       char: char.toUpperCase(),
@@ -74,7 +70,7 @@ export default function QuizBeeGame({ questions, triggerPageFlip, language, onBa
     }));
 
     setSlots(initialSlots);
-    setAvailableTiles(shuffleArray(pool)); // I-shuffle ang pagpipilian (o palitan ng `pool` lang kung ayaw i-shuffle)
+    setAvailableTiles(shuffleArray(pool));
     setAnswerStatus('idle');
     setModalState({ isOpen: false, title: '', message: '', actionLabel: '' });
   }, [currentIndex, currentQ]);
@@ -159,13 +155,28 @@ export default function QuizBeeGame({ questions, triggerPageFlip, language, onBa
   if (!currentQ) return null;
   const isFilled = slots.every(s => s.isSpace || s.char !== '');
 
+  // BAGONG LOGIC: I-grupo ang mga letra BY WORD para buong salita ang bumaba kung kulang sa space
+  const wordGroups = [];
+  let currentWord = [];
+  
+  slots.forEach((slot, index) => {
+    if (slot.isSpace) {
+      if (currentWord.length > 0) {
+        wordGroups.push(currentWord);
+        currentWord = [];
+      }
+    } else {
+      // Itago ang original index para sa handleRemoveSlot function
+      currentWord.push({ ...slot, originalIndex: index });
+    }
+  });
+  if (currentWord.length > 0) {
+    wordGroups.push(currentWord);
+  }
+
   return (
     <div className="w-full max-w-2xl flex flex-col items-center mt-6 sm:mt-8">
       
-      {/* 
-        NILAGYAN NG key={currentIndex} AT className="animate-pop-in"
-        Para tuwing mag-ne-next question, uulitin niya yung Pop-In Bounce effect!
-      */}
       <div 
         key={currentIndex} 
         className="animate-pop-in w-full bg-white rounded-3xl p-6 sm:p-7 mb-5 text-center border-4 border-amber-300 relative shadow-2xl"
@@ -189,32 +200,46 @@ export default function QuizBeeGame({ questions, triggerPageFlip, language, onBa
           {t.fillLabel}
         </span>
 
-        <div className={`flex flex-wrap justify-center gap-y-3 gap-x-1.5 sm:gap-2 min-h-[64px] max-w-full ${answerStatus === 'wrong' ? 'shake-error' : ''}`}>
-          {slots.map((slot, idx) => {
-            if (slot.isSpace) return <div key={idx} className="w-4 sm:w-8 h-12 sm:h-14"></div>;
-
-            if (slot.isFixed) {
-              return (
-                <div key={idx} className={`w-11 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center font-black italic text-2xl sm:text-3xl border-2 transition-all shadow-md ${answerStatus === 'correct' ? 'bg-emerald-500 text-white border-emerald-600' : answerStatus === 'wrong' ? 'bg-rose-500 text-white border-rose-700' : 'bg-white text-gray-900 border-gray-300'}`}>
-                  {slot.char}
-                </div>
-              );
-            }
-
-            if (slot.char === '') {
-              return (
-                <div key={idx} className="w-11 h-12 sm:w-14 sm:h-14 border-2 border-dashed border-white/70 rounded-2xl bg-white/20 flex items-center justify-center backdrop-blur-sm shadow-inner">
-                  <span className="text-white/50 text-2xl font-bold">_</span>
-                </div>
-              );
-            }
+        <div className={`flex flex-wrap justify-center gap-y-4 gap-x-6 sm:gap-x-8 min-h-[64px] max-w-full ${answerStatus === 'wrong' ? 'shake-error' : ''}`}>
+          
+          {wordGroups.map((word, wIdx) => {
+            // BAGONG LOGIC: Kapag 10 pataas ang haba ng salita, liliitan natin ang tiles para magkasya!
+            const isLongWord = word.length >= 10;
+            const boxSize = isLongWord 
+              ? "w-8 h-10 sm:w-11 sm:h-12 text-xl sm:text-2xl" // Mas maliit na tiles para sa mahahabang salita
+              : "w-11 h-12 sm:w-14 sm:h-14 text-2xl sm:text-3xl"; // Orihinal na malaking tiles
 
             return (
-              <button key={idx} onClick={() => handleRemoveSlot(idx)} className={`w-11 h-12 sm:w-14 sm:h-14 rounded-2xl font-black text-2xl sm:text-3xl flex items-center justify-center shadow-lg transition active:scale-95 border-b-4 ${answerStatus === 'correct' ? 'bg-emerald-500 text-white border-emerald-700' : answerStatus === 'wrong' ? 'bg-rose-500 text-white border-rose-700' : 'bg-amber-400 hover:bg-amber-300 text-sky-950 border-amber-600'}`}>
-                {slot.char}
-              </button>
+              <div key={wIdx} className="flex flex-wrap justify-center gap-1 sm:gap-1.5">
+                {word.map((slot) => {
+                  const idx = slot.originalIndex;
+
+                  if (slot.isFixed) {
+                    return (
+                      <div key={idx} className={`${boxSize} rounded-xl sm:rounded-2xl flex items-center justify-center font-black italic border-2 transition-all shadow-md ${answerStatus === 'correct' ? 'bg-emerald-500 text-white border-emerald-600' : answerStatus === 'wrong' ? 'bg-rose-500 text-white border-rose-700' : 'bg-white text-gray-900 border-gray-300'}`}>
+                        {slot.char}
+                      </div>
+                    );
+                  }
+
+                  if (slot.char === '') {
+                    return (
+                      <div key={idx} className={`${boxSize} border-2 border-dashed border-white/70 rounded-xl sm:rounded-2xl bg-white/20 flex items-center justify-center backdrop-blur-sm shadow-inner`}>
+                        <span className="text-white/50 font-bold">_</span>
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <button key={idx} onClick={() => handleRemoveSlot(idx)} className={`${boxSize} rounded-xl sm:rounded-2xl font-black flex items-center justify-center shadow-lg transition active:scale-95 border-b-4 ${answerStatus === 'correct' ? 'bg-emerald-500 text-white border-emerald-700' : answerStatus === 'wrong' ? 'bg-rose-500 text-white border-rose-700' : 'bg-amber-400 hover:bg-amber-300 text-sky-950 border-amber-600'}`}>
+                      {slot.char}
+                    </button>
+                  );
+                })}
+              </div>
             );
           })}
+
         </div>
       </div>
 
