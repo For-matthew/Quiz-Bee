@@ -79,15 +79,14 @@ export default function App() {
               <div className="flex flex-col items-center sm:items-start relative">
                 {/* 
                   BINAGO DITO: 
-                  1. Dinagdag ang 'whitespace-nowrap' para hindi bumaba ang "WORDS".
-                  2. Inayos ang font size (text-3xl sm:text-4xl md:text-5xl) para mag-auto-adjust. 
+                  Pinaliit natin mula 'text-3xl' papuntang 'text-[26px]' ang unang size.
+                  Para kapag nasa cellphone, sakto lang ang laki at hindi sasayad sa gilid.
                 */}
-                <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-yellow-300 tracking-wider uppercase drop-shadow-[0_4px_0_#92400e] text-center sm:text-left z-10 relative whitespace-nowrap">
+                <h1 className="text-2xl sm:text-4xl md:text-5xl font-black text-yellow-300 tracking-wider uppercase drop-shadow-[0_4px_0_#92400e] text-center sm:text-left z-10 relative whitespace-nowrap">
                   COMPLETE THE WORDS
                 </h1>
                 
-                {/* Inayos din natin ang ribbon para laging sakto ang lapit sa text */}
-                <div className="animate-highlight bg-gradient-to-r from-red-600 to-rose-600 text-white font-extrabold text-sm sm:text-lg px-8 sm:px-10 py-1.5 sm:py-2 rounded-xl shadow-[0_4px_10px_rgba(0,0,0,0.4)] border-b-4 border-red-800 uppercase tracking-widest mt-2 sm:mt-2 sm:ml-32 text-center z-20 relative">
+                <div className="animate-highlight bg-gradient-to-r from-red-600 to-rose-600 text-white font-extrabold text-sm sm:text-lg px-8 sm:px-10 py-1.5 sm:py-2 rounded-xl shadow-[0_4px_10px_rgba(0,0,0,0.4)] border-b-4 border-red-800 uppercase tracking-widest mt-2 sm:mt-3 sm:ml-32 text-center z-20 relative">
                   KIDS ACTIVITY
                 </div>
               </div>
