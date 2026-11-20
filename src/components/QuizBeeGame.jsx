@@ -203,7 +203,8 @@ export default function QuizBeeGame({ questions, triggerPageFlip, language, onBa
         <div className={`flex flex-wrap justify-center gap-y-3 sm:gap-y-4 gap-x-4 sm:gap-x-8 min-h-[64px] max-w-full ${answerStatus === 'wrong' ? 'shake-error' : ''}`}>
           
           {wordGroups.map((word, wIdx) => {
-            const isLongWord = word.length >= 9;
+            // BINAGO DITO: Ginawa nating >= 8 imbes na 9 para lumiit din ang "JUDGMENT"
+            const isLongWord = word.length >= 8;
             const boxSize = isLongWord 
               ? "w-7 h-9 sm:w-11 sm:h-12 text-lg sm:text-2xl" 
               : "w-10 h-11 sm:w-14 sm:h-14 text-2xl sm:text-3xl";
