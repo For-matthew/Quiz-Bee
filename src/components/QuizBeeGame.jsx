@@ -200,23 +200,23 @@ export default function QuizBeeGame({ questions, triggerPageFlip, language, onBa
           {t.fillLabel}
         </span>
 
-        <div className={`flex flex-wrap justify-center gap-y-4 gap-x-6 sm:gap-x-8 min-h-[64px] max-w-full ${answerStatus === 'wrong' ? 'shake-error' : ''}`}>
+        <div className={`flex flex-wrap justify-center gap-y-3 sm:gap-y-4 gap-x-4 sm:gap-x-8 min-h-[64px] max-w-full ${answerStatus === 'wrong' ? 'shake-error' : ''}`}>
           
           {wordGroups.map((word, wIdx) => {
-            // BAGONG LOGIC: Kapag 10 pataas ang haba ng salita, liliitan natin ang tiles para magkasya!
-            const isLongWord = word.length >= 10;
+            const isLongWord = word.length >= 9;
             const boxSize = isLongWord 
-              ? "w-8 h-10 sm:w-11 sm:h-12 text-xl sm:text-2xl" // Mas maliit na tiles para sa mahahabang salita
-              : "w-11 h-12 sm:w-14 sm:h-14 text-2xl sm:text-3xl"; // Orihinal na malaking tiles
+              ? "w-7 h-9 sm:w-11 sm:h-12 text-lg sm:text-2xl" 
+              : "w-10 h-11 sm:w-14 sm:h-14 text-2xl sm:text-3xl";
+            const gapSize = isLongWord ? "gap-0.5 sm:gap-1.5" : "gap-1 sm:gap-1.5"; 
 
             return (
-              <div key={wIdx} className="flex flex-wrap justify-center gap-1 sm:gap-1.5">
+              <div key={wIdx} className={`flex flex-wrap justify-center ${gapSize}`}>
                 {word.map((slot) => {
                   const idx = slot.originalIndex;
 
                   if (slot.isFixed) {
                     return (
-                      <div key={idx} className={`${boxSize} rounded-xl sm:rounded-2xl flex items-center justify-center font-black italic border-2 transition-all shadow-md ${answerStatus === 'correct' ? 'bg-emerald-500 text-white border-emerald-600' : answerStatus === 'wrong' ? 'bg-rose-500 text-white border-rose-700' : 'bg-white text-gray-900 border-gray-300'}`}>
+                      <div key={idx} className={`${boxSize} rounded-lg sm:rounded-2xl flex items-center justify-center font-black italic border-2 transition-all shadow-sm sm:shadow-md ${answerStatus === 'correct' ? 'bg-emerald-500 text-white border-emerald-600' : answerStatus === 'wrong' ? 'bg-rose-500 text-white border-rose-700' : 'bg-white text-gray-900 border-gray-300'}`}>
                         {slot.char}
                       </div>
                     );
@@ -224,14 +224,14 @@ export default function QuizBeeGame({ questions, triggerPageFlip, language, onBa
 
                   if (slot.char === '') {
                     return (
-                      <div key={idx} className={`${boxSize} border-2 border-dashed border-white/70 rounded-xl sm:rounded-2xl bg-white/20 flex items-center justify-center backdrop-blur-sm shadow-inner`}>
+                      <div key={idx} className={`${boxSize} border-2 border-dashed border-white/70 rounded-lg sm:rounded-2xl bg-white/20 flex items-center justify-center backdrop-blur-sm shadow-inner`}>
                         <span className="text-white/50 font-bold">_</span>
                       </div>
                     );
                   }
 
                   return (
-                    <button key={idx} onClick={() => handleRemoveSlot(idx)} className={`${boxSize} rounded-xl sm:rounded-2xl font-black flex items-center justify-center shadow-lg transition active:scale-95 border-b-4 ${answerStatus === 'correct' ? 'bg-emerald-500 text-white border-emerald-700' : answerStatus === 'wrong' ? 'bg-rose-500 text-white border-rose-700' : 'bg-amber-400 hover:bg-amber-300 text-sky-950 border-amber-600'}`}>
+                    <button key={idx} onClick={() => handleRemoveSlot(idx)} className={`${boxSize} rounded-lg sm:rounded-2xl font-black flex items-center justify-center shadow-md sm:shadow-lg transition active:scale-95 border-b-[3px] sm:border-b-4 ${answerStatus === 'correct' ? 'bg-emerald-500 text-white border-emerald-700' : answerStatus === 'wrong' ? 'bg-rose-500 text-white border-rose-700' : 'bg-amber-400 hover:bg-amber-300 text-sky-950 border-amber-600'}`}>
                       {slot.char}
                     </button>
                   );
@@ -239,7 +239,6 @@ export default function QuizBeeGame({ questions, triggerPageFlip, language, onBa
               </div>
             );
           })}
-
         </div>
       </div>
 

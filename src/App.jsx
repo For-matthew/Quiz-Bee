@@ -39,7 +39,7 @@ export default function App() {
   return (
     <div className={`min-h-screen bg-gradient-to-b from-[#18a2ee] via-[#158fe0] to-[#0f6bb8] relative w-full flex flex-col items-center pt-4 sm:pt-8 px-4 ${isFlipping ? 'realistic-book-flip' : ''}`}>
       
-      {/* ========================================================
+        {/* ========================================================
           INTODUCTION SCREEN (Tatagal ng ~4 seconds tapos mawawala) 
           ======================================================== */}
       {gameState === 'intro' && (
@@ -47,7 +47,8 @@ export default function App() {
           <div className="flex items-end gap-3 sm:gap-5 pb-10">
             {/* Title Text */}
             <div className="animate-intro-text flex flex-col items-end text-right">
-              <h1 className="text-4xl sm:text-6xl font-black text-yellow-300 tracking-wider uppercase drop-shadow-[0_4px_0_#92400e] leading-none mb-1 sm:mb-2">
+              {/* BINAGO DITO: Pinalitan ang text-yellow-300 ng text-white */}
+              <h1 className="text-4xl sm:text-6xl font-black text-white tracking-wider uppercase drop-shadow-[0_4px_0_#92400e] leading-none mb-1 sm:mb-2">
                 COMPLETE<br/>THE WORDS
               </h1>
             </div>
@@ -75,21 +76,26 @@ export default function App() {
               <div className="animate-realistic-bounce w-20 h-20 sm:w-24 sm:h-24 rounded-full flex items-center justify-center shrink-0 p-1 bg-amber-400/30 backdrop-blur-sm shadow-[0_8px_20px_rgba(0,0,0,0.35)] ring-4 ring-amber-300 z-20 relative">
                 <img src="/cws-logo.png" alt="CWS Logo" className="w-full h-full object-cover [clip-path:circle(49%_at_center)] drop-shadow-[0_4px_8px_rgba(0,0,0,0.4)]" />
               </div>
-
-              <div className="flex flex-col items-center sm:items-start relative">
+             <div className="flex flex-col items-center sm:items-start relative">
                 {/* 
                   BINAGO DITO: 
-                  Pinaliit natin mula 'text-3xl' papuntang 'text-[26px]' ang unang size.
-                  Para kapag nasa cellphone, sakto lang ang laki at hindi sasayad sa gilid.
+                  Tinanggal natin yung 'animate-typing'. 
+                  Hinati natin ang "COMPLETE THE WORDS" para bawat letra ay pwedeng mag-bubble!
                 */}
-                <h1 className="text-2xl sm:text-4xl md:text-5xl font-black text-yellow-300 tracking-wider uppercase drop-shadow-[0_4px_0_#92400e] text-center sm:text-left z-10 relative whitespace-nowrap">
-                  COMPLETE THE WORDS
+                <h1 className="text-[28px] sm:text-4xl md:text-5xl font-black text-white tracking-wider uppercase drop-shadow-[0_4px_0_#92400e] text-center sm:text-left z-10 relative whitespace-nowrap mt-2 sm:mt-0">
+                  {"COMPLETE THE WORDS".split('').map((char, index) => (
+                    <span key={index} className="bubble-letter">
+                      {char === ' ' ? '\u00A0' : char}
+                    </span>
+                  ))}
                 </h1>
                 
                 <div className="animate-highlight bg-gradient-to-r from-red-600 to-rose-600 text-white font-extrabold text-sm sm:text-lg px-8 sm:px-10 py-1.5 sm:py-2 rounded-xl shadow-[0_4px_10px_rgba(0,0,0,0.4)] border-b-4 border-red-800 uppercase tracking-widest mt-2 sm:mt-3 sm:ml-32 text-center z-20 relative">
                   KIDS ACTIVITY
                 </div>
               </div>
+
+
             </div>
           </header>
 
